@@ -1,30 +1,30 @@
-# How to Build Your First Discord Bot with Node.js
+# Fork of a basic discord bot setup
 
-Michiel Mulders shows you how to install and set up a new Discord bot, which is made easier thanks to the API offered by the Discord.js package.
+This is an implementation of a discord server to perform dice rolling actions for Cypher System games
 
-Link to article on SitePoint: [https://www.sitepoint.com/discord-bot-node-js/](https://www.sitepoint.com/discord-bot-node-js/)
+## Commands
 
-## Requirements
+* $help - App help
+  * show list of commands
+* $d - Custom Roll
+  * required: provide a 'die size' to roll
+  * optional: bonus with `+` or `-` prefix
+  * optional: `#`descriptive text for the roll
+* $r - Recovery Roll
+  * rolls 1d6 with a minimum output of 1
+  * optional: bonus number with `+` or `-` prefix, adds to the roll generated
+* $t - Task Roll
+  * rolls 1d20 and comapres the outcome versus the `Target Number` which is 3 * `Task Level`
+  * required: `Task Level` 1-10
+  * optional: bonus with `+` or `-` prefix
+  * optional: `#` followed by descriptive text
 
-- [Node.js](http://nodejs.org/)
-- [Discord](https://discordapp.com/) account
+## output
 
-## Installation Steps (if applicable)
+This system uses the embed feature to provide more stylized elements for better legibility.  
+Color Coding of the embed based on the roll exists on each output with varying features.
 
-1. Clone repo
-2. Run `npm install`
-3. Add Discord credentials in a `.env` file
-3. Run `node index.js`
-4. Interact with your Discord bot via your web browser
-
-## License
-
-SitePoint's code archives and code examples are licensed under the MIT license.
-
-Copyright © 2020 SitePoint
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* Tasks rolls will output any special effects based on the roll (natural 1/17-20)
+* Each message will display descriptive text if provided
+* Each message will show the `nickname` of the user invoking the command to better determine who actually called for each roll.
+* If there are critical formatting problems with the message a direct reply will request the expected changes to allow for a working roll.
