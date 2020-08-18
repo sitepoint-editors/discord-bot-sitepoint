@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 require('dotenv').config();
+const findBonusAndDescription = require('../lib/findBnsAndDesc.js');
 
 module.exports = {
 
@@ -7,6 +8,9 @@ module.exports = {
   name: '$d',
   description: 'Custom Roll',
   async execute(msg, args) {
+
+    console.log('args', args);
+
     const client = process.env.CLIENT;
 
 
@@ -16,32 +20,56 @@ module.exports = {
     const dieMin = 1;
     const dieMax = args[0];
     let rollBonus = 0;
+    // let description = null;
 
     if(dieMax <= 1) {
       msg.reply(`Please provide a die size larger than 1`);
       return;
     }
 
-    let bonusRegex = /^[+-]/;
+    //below section handles bonus and descriptor info
 
-    // if(args[0] && !args[0].match(taskRange)) {msg.reply('First value must be a number.'); return};
+    let bonusRegex = /^[+-]\d*/;
+    let descRegex = /^[#]/;
 
-    if(args[1] && args[1].match(bonusRegex)){
-      rollBonus = parseInt(args[1]);
-    }else if(args[1] && !args[1].match(bonusRegex)){
-      msg.reply("Please indicate a + or - number for the bonus and try again");
-      return;
+    let bnsInd = args.findIndex(arg => arg.match(bonusRegex)) || null;
+    let descInd = args.findIndex(arg => arg.match(descRegex)) || null;
+
+    bnsInd = bnsInd < 0 ? undefined : bnsInd;
+    descInd = descInd < 0 ? undefined : descInd;
+
+
+    if(bnsInd && descInd && bnsInd < descInd){
+      rollBonus = parseInt(args[bnsInd]);
+      rollBonus = isNaN(rollBonus) ? 0 : rollBonus;
     }
 
-    let rollResult = Math.floor(Math.random() * (dieMax - dieMin + 1) + dieMin) + parseInt(rollBonus);
+    
 
-    rollResult = rollResult < 0 ? 1 : rollResult;
+    console.log('rollBonus', rollBonus);
+
+    let rollResult = Math.floor(Math.random() * (dieMax - dieMin + 1) + dieMin) + rollBonus ;
+    // let {rollResult, description, errorMsg} = findBonusAndDescription(args, bonusRegex, descRegex, dieMax, dieMin);
+
+    rollResult = rollResult <= 0 ? 1 : rollResult;
 
     let rollNotes = `Rolling 1d${dieMax}`;
     if(rollBonus != 0){
       rollNotes += rollBonus > 0 ? `+${rollBonus}` : `${rollBonus}`;
     }
 
+    // if(errorMsg){
+    //   msg.reply(errorMsg);
+    //   return;
+    // }
+
+    if(bnsInd && descInd && descInd < bnsInd){
+      msg.reply("Declare any bonus to the roll prior to descriptive text.");
+      return;
+    }
+
+
+    if(descInd) description = args.slice(descInd).join(' ').substr(1);
 
     rollResultEmbed
       .setTitle(`Custom Roll`)
@@ -58,17 +86,8 @@ module.exports = {
 
     rollResultEmbed
       .setFooter(`In response to ${z}`);
-
-    let descriptorReg = /^#/;
-
-    let descriptorStart = null;
-    for(let x = 0; x < args.length; x++){
-      if(args[x].match(descriptorReg)){
-        descriptorStart = x;
-      }
-    }
     
-    if(descriptorStart) description = args.slice(descriptorStart).join(' ').substr(1);
+    
 
     rollResultEmbed
     .setDescription(description ? description : "");

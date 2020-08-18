@@ -27,31 +27,33 @@ module.exports = {
     let taskLevel = args[0];
 
     let success;
-    let taskRange = /[1-9]|10/i;
-    let bonusRegex = /^[+-]/;
+    let taskRange = /[0-9]|10/i;
+    let bonusRegex = /^[+-]\d*/;
     let targetNumber = args[0] * 3;
+    let descRegex = /^[#]/;
     let description = null;
     
-    if(!args[0].match(taskRange)) {msg.reply('First value must be a number between 1 and 10'); return};
+    if(!args[0].match(taskRange)) {msg.reply('First value must be a number between 0 and 10'); return};
+
+    let bnsInd = args.findIndex(arg => arg.match(bonusRegex)) || null;
+    let descInd = args.findIndex(arg => arg.match(descRegex)) || null;
+
+    bnsInd = bnsInd < 0 ? undefined : bnsInd;
+    descInd = descInd < 0 ? undefined : descInd;
 
     
-    if(args[1] && args[1].match(bonusRegex)){
-      rollBonus = parseInt(args[1]);
+    if(bnsInd && descInd && bnsInd < descInd){
+      rollBonus = parseInt(args[bnsInd]);
+    }
+
+    if(bnsInd && descInd && descInd < bnsInd){
+      msg.reply("Declare any bonus to the roll prior to descriptive text.");
+      return;
     }
 
     let rollResult = Math.floor(Math.random() * (dieMax - dieMin + 1) + dieMin) + parseInt(rollBonus);
     
-    let descriptorReg = /^#/;
-
-    let descriptorStart = null;
-    for(let x = 0; x < args.length; x++){
-      if(args[x].match(descriptorReg)){
-        descriptorStart = x;
-      }
-    }
-    
-    if(descriptorStart) description = args.slice(descriptorStart).join(' ').substr(1);
-    
+    if(descInd) description = args.slice(descInd).join(' ').substr(1);
     
     // task high level
     rollResultEmbed
