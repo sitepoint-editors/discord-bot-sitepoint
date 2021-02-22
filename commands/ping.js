@@ -6,3 +6,4 @@ module.exports = {
     msg.channel.send('pong');
   },
 };
+
